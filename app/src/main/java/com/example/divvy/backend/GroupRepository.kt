@@ -293,7 +293,8 @@ class StubGroupRepository @Inject constructor() : GroupRepository {
                     amountCents = expense.amountCents,
                     dateLabel = dateLabel(expense.createdAt),
                     paidByLabel = paidByLabel,
-                    paidByCurrentUser = paidByCurrentUser
+                    paidByCurrentUser = paidByCurrentUser,
+                    timestamp = expense.createdAt
                 )
             }
         }

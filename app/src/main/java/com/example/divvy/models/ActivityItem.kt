@@ -9,5 +9,6 @@ data class ActivityItem(
     val amountCents: Long,
     val dateLabel: String,       // e.g. "Today", "Yesterday"
     val paidByLabel: String,     // e.g. "You", "Sarah"
-    val paidByCurrentUser: Boolean
+    val paidByCurrentUser: Boolean,
+    val timestamp: String
 )

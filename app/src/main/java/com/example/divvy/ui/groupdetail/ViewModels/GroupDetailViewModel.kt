@@ -58,7 +58,8 @@ class GroupDetailViewModel @AssistedInject constructor(
                 repo.getMemberBalances(groupId),
                 repo.getActivity(groupId)
             ) { group, balances, activity ->
-                Triple(group, balances, activity)
+                val sortedActivity = activity.sortedByDescending { it.timestamp }
+                Triple(group, balances, sortedActivity)
             }.collect { (group, balances, activity) ->
                 _uiState.update { current ->
                     current.copy(
