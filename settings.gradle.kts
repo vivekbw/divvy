@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "divvy"
 include(":app")
+include(":shared")
