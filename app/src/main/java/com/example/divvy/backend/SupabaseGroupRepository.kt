@@ -115,7 +115,7 @@ class SupabaseGroupRepository @Inject constructor(
     override suspend fun refreshGroups() {
         try {
             val rows = supabaseClient.postgrest
-                .rpc("get_my_groups_summary")
+                .rpc("get_my_groups_summary_v3")
                 .decodeList<GroupSummaryRow>()
 
             _groups.value = DataResult.Success(rows.map { row ->
