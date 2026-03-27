@@ -29,7 +29,8 @@ interface ExpensesRepository {
         amountCents: Long,
         currency: String,
         splitMethod: String,
-        splits: List<ExpenseSplit>
+        splits: List<ExpenseSplit>,
+        paidByUserId: String? = null
     ): GroupExpense
     suspend fun getExpenseById(expenseId: String): Expense?
     suspend fun getGroupExpenseById(expenseId: String): GroupExpense?
@@ -92,7 +93,8 @@ class StubExpensesRepository @Inject constructor() : ExpensesRepository {
         amountCents: Long,
         currency: String,
         splitMethod: String,
-        splits: List<ExpenseSplit>
+        splits: List<ExpenseSplit>,
+        paidByUserId: String?
     ): GroupExpense {
         val expense = createExpense(groupId, description, amountCents, splitMethod)
         this.splits[expense.id] = splits

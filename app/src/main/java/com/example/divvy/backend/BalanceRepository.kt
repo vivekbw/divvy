@@ -41,7 +41,7 @@ class SupabaseBalanceRepository @Inject constructor(
         val params = buildJsonObject { put("p_group_id", groupId) }
         val balanceRows = try {
             supabaseClient.postgrest
-                .rpc("net_balances", params)
+                .rpc("net_balances_v3", params)
                 .decodeList<NetBalanceRow>()
         } catch (_: Exception) {
             emptyList()

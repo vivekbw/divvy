@@ -85,7 +85,8 @@ class SupabaseExpensesRepository @Inject constructor(
         amountCents: Long,
         currency: String,
         splitMethod: String,
-        splits: List<ExpenseSplit>
+        splits: List<ExpenseSplit>,
+        paidByUserId: String?
     ): GroupExpense {
         val params = buildJsonObject {
             put("p_group_id", groupId)
@@ -93,7 +94,7 @@ class SupabaseExpensesRepository @Inject constructor(
             put("p_amount_cents", amountCents)
             put("p_currency", currency)
             put("p_split_method", splitMethod)
-            put("p_paid_by", authRepository.getCurrentUserId())
+            put("p_paid_by", paidByUserId ?: authRepository.getCurrentUserId())
             putJsonArray("p_splits") {
                 splits.forEach { split ->
                     add(buildJsonObject {

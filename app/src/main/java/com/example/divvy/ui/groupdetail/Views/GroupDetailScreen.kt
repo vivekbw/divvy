@@ -789,9 +789,13 @@ private fun SettleChip(label: String, selected: Boolean, onClick: () -> Unit) {
 private fun ActivityCard(item: ActivityItem) {
     val dollars = item.amountCents / 100.0
     val amount = "$${String.format("%.2f", dollars)}"
-    val badgeLabel = if (item.paidByCurrentUser) "You paid" else "You owe"
-    val badgeBg = if (item.paidByCurrentUser) PositiveGreenLight else NegativeRedLight
-    val badgeTextColor = if (item.paidByCurrentUser) PositiveGreen else NegativeRed
+    val badgeLabel = when {
+        item.isSettlement -> "Settled"
+        item.paidByCurrentUser -> "You paid"
+        else -> "You owe"
+    }
+    val badgeBg = if (!item.paidByCurrentUser && !item.isSettlement) NegativeRedLight else PositiveGreenLight
+    val badgeTextColor = if (!item.paidByCurrentUser && !item.isSettlement) NegativeRed else PositiveGreen
 
     Row(
         modifier = Modifier

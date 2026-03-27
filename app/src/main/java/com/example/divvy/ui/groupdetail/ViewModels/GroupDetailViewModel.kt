@@ -138,7 +138,8 @@ class GroupDetailViewModel @AssistedInject constructor(
                 }
                 val activity = buildActivity(expenses, members)
                 val memberIds = members.map { it.userId }.toSet() + myUserId
-                GroupDetailData(group, memberBalances, activity, memberIds)
+                val groupBalanceCents = rawBalances.sumOf { it.balanceCents }
+                GroupDetailData(group.copy(balanceCents = groupBalanceCents), memberBalances, activity, memberIds)
             }.collect { data ->
                 _uiState.update { current ->
                     current.copy(
@@ -227,6 +228,7 @@ class GroupDetailViewModel @AssistedInject constructor(
             .sortedByDescending { it.createdAt }
             .map { expense ->
                 val paidByCurrentUser = expense.paidByUserId == myUserId
+                val isSettlement = expense.title == "Settlement" && expense.splits.size == 1
                 ActivityItem(
                     id = expense.id,
                     title = expense.title,
@@ -235,7 +237,8 @@ class GroupDetailViewModel @AssistedInject constructor(
                     paidByLabel = if (paidByCurrentUser) "You"
                     else memberMap[expense.paidByUserId]?.name ?: "Unknown",
                     paidByCurrentUser = paidByCurrentUser,
-                    timestamp = expense.createdAt
+                    timestamp = expense.createdAt,
+                    isSettlement = isSettlement
                 )
             }
     }
