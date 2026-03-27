@@ -91,8 +91,10 @@ class LedgerViewModel @Inject constructor(
 
                 val entries = allExpenses.map { expense ->
                     val isSettlement = expense.title == "Settlement"
-                            && expense.splits.size == 1
-                    val toUserId = if (isSettlement) expense.splits.first().userId else ""
+                    val toUserId = if (isSettlement) {
+                        expense.splits.firstOrNull { it.userId != expense.paidByUserId }?.userId
+                            ?: ""
+                    } else ""
 
                     LedgerEntry(
                         id = expense.id,

@@ -181,6 +181,7 @@ fun GroupDetailScreen(
                         settleMode     = uiState.settleMode,
                         settleAmount   = uiState.settleAmount,
                         isSettling     = uiState.isSettling,
+                        settleErrorMessage = uiState.settleErrorMessage,
                         onCardClick    = { viewModel.onMemberClick(mb.userId) },
                         onModeSelect   = viewModel::onSettleModeSelected,
                         onAmountChange = viewModel::onSettleAmountChange,
@@ -594,6 +595,7 @@ private fun MemberBalanceCard(
     settleMode: SettleMode?,
     settleAmount: String,
     isSettling: Boolean,
+    settleErrorMessage: String?,
     onCardClick: () -> Unit,
     onModeSelect: (SettleMode) -> Unit,
     onAmountChange: (String) -> Unit,
@@ -727,6 +729,14 @@ private fun MemberBalanceCard(
 
                 val canConfirm = settleMode != null &&
                     (settleMode == SettleMode.Fully || settleAmount.toDoubleOrNull()?.let { it > 0 } == true)
+                if (!settleErrorMessage.isNullOrBlank()) {
+                    Text(
+                        text = settleErrorMessage,
+                        color = NegativeRed,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

@@ -82,7 +82,7 @@ class AnalyticsViewModel @Inject constructor(
                 groupsResult to expenses
             }.collect { (groupsResult, allExpenses) ->
                 val groups = (groupsResult as? DataResult.Success)?.data ?: return@collect
-                val realExpenses = allExpenses.filter { it.title != "Settlement" || it.splits.size > 1 }
+                val realExpenses = allExpenses.filter { it.title != "Settlement" }
                 val groupMap = groups.associateBy { it.id }
 
                 var totalSpent = 0L

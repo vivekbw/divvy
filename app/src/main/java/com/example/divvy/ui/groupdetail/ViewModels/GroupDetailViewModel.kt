@@ -52,6 +52,7 @@ data class GroupDetailUiState(
     val settleMode get() = settlement.settleMode
     val settleAmount get() = settlement.settleAmount
     val isSettling get() = settlement.isSettling
+    val settleErrorMessage get() = settlement.errorMessage
     val isEditing get() = editGroup.isEditing
     val editName get() = editGroup.editName
     val editIcon get() = editGroup.editIcon
@@ -127,18 +128,26 @@ class GroupDetailViewModel @AssistedInject constructor(
                 memberRepository.getMembers(groupId),
                 balanceRepository.observeBalances(groupId),
                 expensesRepository.observeGroupExpenses(groupId)
-            ) { group, members, rawBalances, expenses ->
-                val balanceMap = rawBalances.associateBy { it.userId }
+            ) { group, members, _, expenses ->
+                val pairwiseBalances = pairwiseBalancesFromExpenses(expenses)
                 val memberBalances = members.map { member ->
                     MemberBalance(
                         userId = member.userId,
                         name = member.name,
-                        balanceCents = balanceMap[member.userId]?.balanceCents ?: 0L
+                        balanceCents = pairwiseBalances[member.userId] ?: 0L
                     )
                 }
+                // Same source as per-member rows: sum of pairwise balances with others = your net in group.
+                // Avoids mismatch with get_my_groups_summary.balance_cents on the banner.
+                val bannerBalanceCents = currentUserNetFromPairwiseBalances(memberBalances, myUserId)
                 val activity = buildActivity(expenses, members)
                 val memberIds = members.map { it.userId }.toSet() + myUserId
-                GroupDetailData(group, memberBalances, activity, memberIds)
+                GroupDetailData(
+                    group.copy(balanceCents = bannerBalanceCents),
+                    memberBalances,
+                    activity,
+                    memberIds
+                )
             }.collect { data ->
                 _uiState.update { current ->
                     current.copy(
@@ -262,6 +271,57 @@ class GroupDetailViewModel @AssistedInject constructor(
                 else -> date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
             }
         } catch (_: Exception) { isoDate }
+    }
+
+    /**
+     * Pairwise balances from net_balances: positive = they owe you, negative = you owe them.
+     * Your net in the group equals the sum of everyone else's balance toward you.
+     */
+    private fun currentUserNetFromPairwiseBalances(
+        memberBalances: List<MemberBalance>,
+        myUserId: String
+    ): Long {
+        val hasSelf = memberBalances.any { it.userId == myUserId }
+        return if (hasSelf) {
+            memberBalances.filter { it.userId != myUserId }.sumOf { it.balanceCents }
+        } else {
+            memberBalances.sumOf { it.balanceCents }
+        }
+    }
+
+    private fun pairwiseBalancesFromExpenses(expenses: List<GroupExpense>): Map<String, Long> {
+        val balances = mutableMapOf<String, Long>()
+        expenses.forEach { expense ->
+            if (expense.title == "Settlement") {
+                val split = expense.splits.firstOrNull() ?: return@forEach
+                when {
+                    expense.paidByUserId == myUserId && split.userId != myUserId -> {
+                        // I paid this member; my debt to them decreases (towards zero).
+                        balances[split.userId] = (balances[split.userId] ?: 0L) + expense.amountCents
+                    }
+                    expense.paidByUserId != myUserId && split.userId == myUserId -> {
+                        // Member paid me; their debt to me decreases (towards zero).
+                        balances[expense.paidByUserId] =
+                            (balances[expense.paidByUserId] ?: 0L) - expense.amountCents
+                    }
+                }
+                return@forEach
+            }
+
+            if (expense.paidByUserId == myUserId) {
+                expense.splits
+                    .filter { it.userId != myUserId }
+                    .forEach { split ->
+                        balances[split.userId] = (balances[split.userId] ?: 0L) + split.amountCents
+                    }
+            } else {
+                val myShare = expense.splits.find { it.userId == myUserId }?.amountCents ?: 0L
+                if (myShare > 0) {
+                    balances[expense.paidByUserId] = (balances[expense.paidByUserId] ?: 0L) - myShare
+                }
+            }
+        }
+        return balances
     }
 }
 

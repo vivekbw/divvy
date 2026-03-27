@@ -41,6 +41,12 @@ private data class GroupRow(
     @SerialName("created_at") val createdAt: String = ""
 )
 
+@Serializable
+private data class GroupNetBalanceRow(
+    @SerialName("user_id") val userId: String = "",
+    @SerialName("balance_cents") val balanceCents: Long = 0L
+)
+
 @Singleton
 class SupabaseGroupRepository @Inject constructor(
     private val supabaseClient: SupabaseClient
@@ -118,19 +124,33 @@ class SupabaseGroupRepository @Inject constructor(
                 .rpc("get_my_groups_summary")
                 .decodeList<GroupSummaryRow>()
 
-            _groups.value = DataResult.Success(rows.map { row ->
+            val groups = rows.map { row ->
+                val freshBalanceCents = try {
+                    balanceFromNetBalances(row.id)
+                } catch (_: Exception) {
+                    row.balanceCents
+                }
                 Group(
                     id = row.id,
                     name = row.name,
                     icon = iconFromName(row.icon),
                     memberCount = row.memberCount.toInt(),
-                    balanceCents = row.balanceCents,
+                    balanceCents = freshBalanceCents,
                     createdBy = row.createdBy
                 )
-            })
+            }
+            _groups.value = DataResult.Success(groups)
         } catch (e: Exception) {
             _groups.value = DataResult.Error("Failed to load groups", e)
         }
+    }
+
+    private suspend fun balanceFromNetBalances(groupId: String): Long {
+        val params = buildJsonObject { put("p_group_id", groupId) }
+        val rows = supabaseClient.postgrest
+            .rpc("net_balances", params)
+            .decodeList<GroupNetBalanceRow>()
+        return rows.sumOf { it.balanceCents }
     }
 
     private fun iconFromName(name: String): GroupIcon =
