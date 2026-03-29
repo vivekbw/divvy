@@ -61,6 +61,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            groupRepository.refreshGroups() // Explicitly trigger groups refresh on startup
             groupRepository.listGroups().collect { result ->
                 _uiState.update { current ->
                     when (result) {
@@ -101,7 +102,6 @@ class HomeViewModel @Inject constructor(
                 _uiState.update { current ->
                     when (result) {
                         is DataResult.Success -> current.copy(activityItems = result.data)
-                        // Activity feed errors don't block the UI for now, or could show a snackbar
                         else -> current
                     }
                 }

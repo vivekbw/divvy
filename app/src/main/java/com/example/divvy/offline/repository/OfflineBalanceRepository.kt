@@ -7,6 +7,7 @@ import com.example.divvy.offline.NetworkMonitor
 import com.example.divvy.offline.db.dao.CachedBalanceDao
 import com.example.divvy.offline.db.entity.CachedBalanceEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
@@ -28,12 +29,10 @@ class OfflineBalanceRepository @Inject constructor(
         if (!networkMonitor.isOnline.value) return
         try {
             remote.refreshBalances(groupId)
-            // Collect the latest from remote and cache
-            remote.observeBalances(groupId).collect { balances ->
-                balanceDao.deleteByGroupId(groupId)
-                balanceDao.insertAll(balances.map { it.toEntity(groupId) })
-                return@collect
-            }
+            // Fix: Use first() instead of collect so the sync process can actually finish
+            val balances = remote.observeBalances(groupId).first()
+            balanceDao.deleteByGroupId(groupId)
+            balanceDao.insertAll(balances.map { it.toEntity(groupId) })
         } catch (e: Exception) {
             Timber.w(e, "Failed to refresh balances for group $groupId")
         }
