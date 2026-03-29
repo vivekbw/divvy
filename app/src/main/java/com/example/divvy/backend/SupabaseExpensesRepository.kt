@@ -4,6 +4,7 @@ import com.example.divvy.models.Expense
 import com.example.divvy.models.ExpenseSplit
 import com.example.divvy.models.GroupExpense
 import com.example.divvy.models.ReceiptItemRow
+import com.example.divvy.models.Settlement
 import io.github.jan.supabase.SupabaseClient
 import io.sentry.Sentry
 import io.github.jan.supabase.postgrest.from
@@ -179,6 +180,12 @@ class SupabaseExpensesRepository @Inject constructor(
     override suspend fun saveReceiptItems(items: List<ReceiptItemRow>) {
         if (items.isEmpty()) return
         supabaseClient.from("receipt_items").insert(items)
+    }
+
+    override suspend fun createSettlement(groupId: String, payerId: String, payeeId: String, amountCents: Long) {
+        supabaseClient.from("settlements").insert(
+            Settlement(groupId = groupId, payerId = payerId, payeeId = payeeId, amountCents = amountCents)
+        )
     }
 
     override fun observeGroupExpenses(groupId: String): Flow<List<GroupExpense>> =
