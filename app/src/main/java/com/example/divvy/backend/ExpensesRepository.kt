@@ -46,6 +46,7 @@ interface ExpensesRepository {
     suspend fun updateExpenseSplits(expenseId: String, splits: List<ExpenseSplit>)
     suspend fun deleteExpense(expenseId: String)
     suspend fun saveReceiptItems(items: List<ReceiptItemRow>)
+    suspend fun createSettlement(groupId: String, payerId: String, payeeId: String, amountCents: Long)
 
     fun observeGroupExpenses(groupId: String): Flow<List<GroupExpense>>
     fun observeAllGroupExpenses(): Flow<List<GroupExpense>>
@@ -146,6 +147,7 @@ class StubExpensesRepository @Inject constructor() : ExpensesRepository {
     }
 
     override suspend fun saveReceiptItems(items: List<ReceiptItemRow>) { }
+    override suspend fun createSettlement(groupId: String, payerId: String, payeeId: String, amountCents: Long) { }
 
     override fun observeGroupExpenses(groupId: String): Flow<List<GroupExpense>> =
         _cache.map { it[groupId] ?: emptyList() }
