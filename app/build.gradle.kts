@@ -24,11 +24,11 @@ val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY", "")
 val sentryDsn = localProperties.getProperty("SENTRY_DSN", "https://eface88f73297760c177f37741e9d095@o4511108456906752.ingest.us.sentry.io/4511108458414080")
 
 android {
-    namespace = "com.divvy.divvy"
+    namespace = "com.favalabs.divvy"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.divvy.divvy"
+        applicationId = "com.favalabs.divvy"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

@@ -10,7 +10,7 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
-        android:name=".DivvyApplication"
+        android:name="com.favalabs.divvy.DivvyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_rounded"
         android:label="@string/app_name"
@@ -32,7 +32,7 @@
         <meta-data android:name="io.sentry.dsn" android:value="https://eface88f73297760c177f37741e9d095@o4511108456906752.ingest.us.sentry.io/4511108458414080" />
         <meta-data android:name="io.sentry.auto-init" android:value="true" />
         <activity
-            android:name=".AuthActivity"
+            android:name="com.favalabs.divvy.AuthActivity"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>
@@ -48,11 +48,11 @@
 
                 <data
                     android:host="auth"
-                    android:scheme="com.example.divvy" />
+                    android:scheme="com.favalabs.divvy" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="com.favalabs.divvy.MainActivity"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>
@@ -64,7 +64,7 @@
         </activity>
 
         <service
-            android:name=".notifications.DivvyFirebaseMessagingService"
+            android:name="com.favalabs.divvy.notifications.DivvyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
