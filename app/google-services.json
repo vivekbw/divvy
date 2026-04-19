@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:219278201086:android:542094da04662735bc15af",
         "android_client_info": {
-          "package_name": "com.divvy.divvy"
+          "package_name": "com.favalabs.divvy"
         }
       },
       "oauth_client": [],
@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:219278201086:android:8cae446f6277914bbc15af",
         "android_client_info": {
-          "package_name": "com.example.divvy"
+          "package_name": "com.favalabs.divvy"
         }
       },
       "oauth_client": [],

@@ -25,7 +25,7 @@ SUPABASE_URL=https://xxxx.supabase.co
 SUPABASE_ANON_KEY=eyJ...
 ```
 
-In Supabase Auth settings, enable Google and add `com.divvy.divvy://auth` as a redirect URL.
+In Supabase Auth settings, enable Google and add `com.favalabs.divvy://auth` as a redirect URL.
 
 ## Project Structure
 
