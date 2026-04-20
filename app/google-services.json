@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:219278201086:android:542094da04662735bc15af",
         "android_client_info": {
-          "package_name": "com.favalabs.divvy"
+          "package_name": "com.divvy.divvy"
         }
       },
       "oauth_client": [],
@@ -27,6 +27,25 @@
     {
       "client_info": {
         "mobilesdk_app_id": "1:219278201086:android:8cae446f6277914bbc15af",
+        "android_client_info": {
+          "package_name": "com.example.divvy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6A0ysLV_OIXLXyrHNiwxf5BKGO2R7slE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219278201086:android:a52b7a87a360c32cbc15af",
         "android_client_info": {
           "package_name": "com.favalabs.divvy"
         }
